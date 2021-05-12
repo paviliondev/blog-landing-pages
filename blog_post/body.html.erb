@@ -1,4 +1,6 @@
 <% if current_user %><% set_category_user('blog') %><% end %>
+<%= render partial: "header" %>
+
 <% topic_view(params[:param],
   opts: {
     include_suggested: false,
