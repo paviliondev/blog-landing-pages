@@ -1,0 +1,44 @@
+<% if current_user %><% set_category_user('blog') %><% end %>
+
+<div class="contents">
+  <%= topic_list(opts: {
+      render_list: true
+    },
+    list_opts: {
+      category: 'blog',
+      no_definitions: true,
+      per_page: 10,
+      page: params[:page]
+    },
+    item_opts: {
+      excerpt_length: 30,
+      include_avatar: true,
+      profile_details: !mobile_view?,
+      avatar_size: 60
+    }
+  )%>
+</div>
+
+<div class="btn btn-fixed btn-subscribe <% if current_user %>user<% else %>guest<% end %>" title="Subscribe">
+  <% if current_user %>
+    <img class="fixed-avatar" src="<%= current_user.avatar_template_url.gsub("{size}", "65") %>">
+  <% else %>
+    <div class="fixed-icon"><%= SvgSprite.raw_svg('user-circle') %></div>
+  <% end %>
+  <% unless mobile_view? %>
+    <div class="fixed-label">Subscribe</div>
+  <% end %>
+</div>
+
+<% if current_user && @category_user.present? %>
+  <%= render partial: 'modal', locals: {
+    title: "Subscribe",
+    class: "subscribe",
+    content: render(partial: "subscription_form", locals: {
+      category_id: @category_user.category.id,
+      subscribed: (@category_user &&
+        @category_user.notification_level >= CategoryUser.notification_levels[:watching_first_post]
+      )
+    })
+  } %>
+<% end %>
