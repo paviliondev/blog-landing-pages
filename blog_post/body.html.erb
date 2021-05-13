@@ -1,28 +1,27 @@
 <% if current_user %><% set_category_user('blog') %><% end %>
-<%= render partial: "header" %>
+<% get_topic_view(params[:param], opts: { include_suggested: false, include_related: false, post_number: 1 }, instance_var: "topic_view", set_page_title: true) %>
 
-<% topic_view(params[:param],
-  opts: {
-    include_suggested: false,
-    include_related: false,
-    post_number: 1
-  },
-  instance_var: "topic_view"
-) %>
+<%= render partial: "header", locals: {
+  logo_url: "https://pavilion-assets.nyc3.digitaloceanspaces.com/landing/logo-blog.png",
+  title: "Try Blog",
+  root: "/blog"
+} %>
 
-<div class="title-container" <% unless mobile_view? %> style="background-image: url(<%= @topic_view.topic.image_url %>) <% end %>">
-  <div class="contents canvas">
-    <h1 title="<%= @topic_view.title %>" class="title"><%= @topic_view.title %></h1>
-    <%= render partial: 'topic_byline', locals: {
-      topic: @topic_view.topic,
-      include_link: true,
-      user_profile_opts: {
-        include_avatar: true,
-        avatar_size: 60
-      }
-    } %>
+<% if @topic_view.present? %>
+  <div class="title-container" <% unless mobile_view? %> style="background-image: url(<%= @topic_view.topic.image_url %>) <% end %>">
+    <div class="contents canvas">
+      <h1 title="<%= @topic_view.title %>" class="title"><%= @topic_view.title %></h1>
+      <%= render partial: 'topic_byline', locals: {
+        topic: @topic_view.topic,
+        include_link: true,
+        user_profile_opts: {
+          include_avatar: true,
+          avatar_size: 60
+        }
+      } %>
+    </div>
   </div>
-</div>
+<% end %>
 
 <a href="/blog" class="btn btn-fixed btn-blog" title="Posts">
   <div class="fixed-icon"><%= SvgSprite.raw_svg('stream') %></div>
@@ -31,35 +30,37 @@
   <% end %>
 </a>
 
-<article class="post">
-  <div class="container">
-    <section class="post-content canvas">
-      <%= ::LandingPages::Post.html(@topic_view.posts.first).html_safe %>
-    </section>
+<% if @topic_view.present? %>
+  <article class="post">
+    <div class="container">
+      <section class="post-content canvas">
+        <%= ::LandingPages::Post.html(@topic_view.posts.first).html_safe %>
+      </section>
 
-    <div class="comment-container">
-      <% if @topic_view.posts.length > 1 %>
-        <div class="comment-heading"><h4>Comments</h4></div>
-        <div class="comments canvas">
-          <% @topic_view.posts[1..-1].each do |post| %>
-            <div class="comment">
-              <div class="comment-avatar">
-                <img width="35" height="35" class="img-avatar" src="<%= post.user.small_avatar_url %>">
+      <div class="comment-container">
+        <% if @topic_view.posts.length > 1 %>
+          <div class="comment-heading"><h4>Comments</h4></div>
+          <div class="comments canvas">
+            <% @topic_view.posts[1..-1].each do |post| %>
+              <div class="comment">
+                <div class="comment-avatar">
+                  <img width="35" height="35" class="img-avatar" src="<%= post.user.small_avatar_url %>">
+                </div>
+                <div class="comment-content">
+                  <h3 class="comment-user" title="<%= post.user.username %>"><%= post.user.username %></h3>
+                  <p><%= post.cooked.html_safe %></p>
+                </div>
               </div>
-              <div class="comment-content">
-                <h3 class="comment-user" title="<%= post.user.username %>"><%= post.user.username %></h3>
-                <p><%= post.cooked.html_safe %></p>
-              </div>
-            </div>
-          <% end %>
-       </div>
-     <% end %>
-      <div class="comment-footer">
-        <a class="btn btn-primary" href="<%= @topic_view.topic.url %>">Post a reply</a>
+            <% end %>
+         </div>
+       <% end %>
+        <div class="comment-footer">
+          <a class="btn btn-primary" href="<%= @topic_view.topic.url %>">Post a reply</a>
+        </div>
       </div>
     </div>
-  </div>
-</article>
+  </article>
+<% end %>
 
 <div class="btn btn-fixed btn-subscribe <% if current_user %>user<% else %>guest<% end %>" title="Subscribe">
   <% if current_user %>

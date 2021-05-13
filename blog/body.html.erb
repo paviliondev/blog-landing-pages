@@ -1,5 +1,10 @@
 <% if current_user %><% set_category_user('blog') %><% end %>
-<%= render partial: "header" %>
+
+<%= render partial: "header", locals: {
+  logo_url: "https://pavilion-assets.nyc3.digitaloceanspaces.com/landing/logo-blog.png",
+  title: "Try Blog",
+  root: "/blog"
+} %>
 
 <div class="blog-title">
   <h1>Example Blog</h1>
