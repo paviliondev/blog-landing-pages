@@ -1,6 +1,13 @@
 <% if current_user %><% set_category_user('blog') %><% end %>
 <% get_topic_view(params[:param], opts: { include_suggested: false, include_related: false, post_number: 1 }, instance_var: "topic_view", set_page_title: true) %>
 
+<% content_for :head do %>
+  <meta name="description" content="Pavilion's example blog for our Blog Landing Pages">
+  <meta property="og:title" content="<%= @page_title %>" />
+  <meta property="og:description" content="<%= @topic_view.posts.first.excerpt_for_topic %>" />
+  <meta property="og:image" content="<%= @topic_view.topic.image_url %>" />
+<% end %>
+
 <%= render partial: "header", locals: {
   logo_url: "https://pavilion-assets.nyc3.digitaloceanspaces.com/landing/logo-blog.png",
   title: "Try Blog",
