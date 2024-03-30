@@ -1,4 +1,5 @@
-<% if current_user %><% set_category_user('blog') %><% end %>
+<% set_parent_page(@page.parent_id) %>
+<% set_category_user(@parent_page.category_id) %>
 <% get_topic_view(params[:param], opts: { include_suggested: false, include_related: false, post_number: 1 }, instance_var: "topic_view", set_page_title: true) %>
 
 <% content_for :head do %>
@@ -7,12 +8,6 @@
   <meta property="og:description" content="<%= @topic_view.posts.first.excerpt_for_topic %>" />
   <meta property="og:image" content="<%= @topic_view.topic.image_url %>" />
 <% end %>
-
-<%= render partial: "header", locals: {
-  logo_url: "https://pavilion-assets.nyc3.digitaloceanspaces.com/landing/logo-blog.png",
-  title: "Try Blog",
-  root: "/blog"
-} %>
 
 <% if @topic_view.present? %>
   <div class="title-container" <% unless mobile_view? %> style="background-image: url(<%= @topic_view.topic.image_url %>) <% end %>">
@@ -30,7 +25,7 @@
   </div>
 <% end %>
 
-<a href="/blog" class="btn btn-fixed btn-blog" title="Posts">
+<a href="/<%= @parent_page.path %>" class="btn btn-fixed btn-blog" title="Posts">
   <div class="fixed-icon"><%= SvgSprite.raw_svg('stream') %></div>
   <% unless mobile_view? %>
     <div class="fixed-label">Posts</div>
@@ -80,15 +75,13 @@
   <% end %>
 </div>
 
-<% if current_user && @category_user.present? %>
+<% if @category_user.present? %>
   <%= render partial: 'modal', locals: {
     title: "Subscribe",
     class: "subscribe",
     content: render(partial: "subscription_form", locals: {
       category_id: @category_user.category.id,
-      subscribed: (@category_user &&
-        @category_user.notification_level >= CategoryUser.notification_levels[:watching_first_post]
-      )
+      subscribed: @category_user.notification_level >= CategoryUser.notification_levels[:watching_first_post]
     })
   } %>
 <% end %>
