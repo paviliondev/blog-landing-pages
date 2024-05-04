@@ -10,9 +10,9 @@
 <% end %>
 
 <% if @topic_view.present? %>
-  <div class="title-container" <% unless mobile_view? %> style="background-image: url(<%= @topic_view.topic.image_url %>) <% end %>">
+  <div class="title-container" <% unless mobile_view? %>style="background-image: url(<%= @topic_view.topic.image_url %>);"<% end %>>
     <div class="contents canvas">
-      <h1 title="<%= @topic_view.title %>" class="title"><%= @topic_view.title %></h1>
+      <h1 class="title"><%= emoji_codes_to_img(@topic_view.title) %></h1>
       <%= render partial: 'topic_byline', locals: {
         topic: @topic_view.topic,
         include_link: true,
@@ -64,20 +64,16 @@
   </article>
 <% end %>
 
-<div class="btn btn-fixed btn-subscribe <% if current_user %>user<% else %>guest<% end %>" title="Subscribe">
-  <% if current_user %>
-    <img class="fixed-avatar" src="<%= current_user.avatar_template_url.gsub("{size}", "65") %>">
-  <% else %>
-    <div class="fixed-icon"><%= SvgSprite.raw_svg('user-circle') %></div>
-  <% end %>
-  <% unless mobile_view? %>
-    <div class="fixed-label">Subscribe</div>
-  <% end %>
-</div>
-
 <% if @category_user.present? %>
+  <div class="btn btn-fixed btn-subscribe user" title="Subscription">
+    <img class="fixed-avatar" src="<%= current_user.avatar_template_url.gsub("{size}", "65") %>">
+    <% unless mobile_view? %>
+      <div class="fixed-label">Subscription</div>
+    <% end %>
+  </div>
+
   <%= render partial: 'modal', locals: {
-    title: "Subscribe",
+    title: "Update your subscription",
     class: "subscribe",
     content: render(partial: "subscription_form", locals: {
       category_id: @category_user.category.id,
